@@ -16,7 +16,6 @@ namespace API
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            // Configuration = configuration;
         }
 
 

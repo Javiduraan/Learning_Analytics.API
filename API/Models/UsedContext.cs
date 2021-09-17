@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using API.Models;
 
 namespace API.Models
 {
@@ -35,7 +36,8 @@ namespace API.Models
                         .HasForeignKey(p => p.GradeId);
 
              modelBuilder.Entity<Student>()
-                         .HasOne(p => p.Teacher).WithMany()
+                         .HasOne(p => p.Teacher)
+                         .WithMany()
                          .HasForeignKey(p => p.TeacherId);
 
             modelBuilder.Entity<Teacher>()
@@ -52,5 +54,6 @@ namespace API.Models
         public DbSet<Users> Users { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<API.Models.Grade> Grade { get; set; }
     }
 }

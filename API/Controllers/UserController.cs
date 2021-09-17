@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Models;
+using BC = BCrypt.Net.BCrypt;
 
 namespace API.Controllers
 {
@@ -25,6 +26,22 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
+        }
+
+        [Route("/api/[controller]/Auth")]
+        [HttpPost]
+        public async Task<ActionResult<Boolean>> AuthenticateUsers(string username, string password)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.Username == username);
+
+            if (user is null || !BC.Verify(password, user.Password))
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         // GET: api/User/5
@@ -77,6 +94,9 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Users>> PostUsers(Users users)
         {
+            //Encrypts Password
+            users.Password = BC.HashPassword(users.Password);
+
             _context.Users.Add(users);
             await _context.SaveChangesAsync();
 
