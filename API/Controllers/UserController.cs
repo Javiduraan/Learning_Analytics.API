@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Models;
 using BC = BCrypt.Net.BCrypt;
+using Microsoft.AspNetCore.Cors;
 
 namespace API.Controllers
 {
@@ -28,13 +29,14 @@ namespace API.Controllers
             return await _context.Users.ToListAsync();
         }
 
+        [EnableCors]
         [Route("/api/[controller]/Auth")]
         [HttpPost]
-        public async Task<ActionResult<Boolean>> AuthenticateUsers(string username, string password)
+        public async Task<ActionResult<Boolean>> AuthenticateUsers(Users user)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Username == username);
+            var probUser = await _context.Users.FirstOrDefaultAsync(x => x.Username == user.Username);
 
-            if (user is null || !BC.Verify(password, user.Password))
+            if (probUser is null || !BC.Verify(user.Password, probUser.Password))
             {
                 return NotFound();
             }

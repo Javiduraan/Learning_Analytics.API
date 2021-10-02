@@ -11,6 +11,7 @@ namespace API
 {
     public class Startup
     {
+        readonly string AllowSpecifedOrigin = "_politica";
         public IConfiguration _configuration { get; set; }
 
         public Startup(IConfiguration configuration)
@@ -22,6 +23,16 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(opt => 
+            {
+                opt.AddPolicy(name: AllowSpecifedOrigin,
+                              builder => 
+                              {
+                                 builder.WithOrigins("http://localhost:3000")
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                              });
+            });
 
             services.AddControllers();
 
@@ -48,6 +59,8 @@ namespace API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors(AllowSpecifedOrigin);
 
             app.UseEndpoints(endpoints =>
             {
