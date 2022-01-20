@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using API.Models;
 using BC = BCrypt.Net.BCrypt;
 using Microsoft.AspNetCore.Cors;
+using IronPython;
+using IronPython.Hosting;
 
 namespace API.Controllers
 {
@@ -126,5 +128,27 @@ namespace API.Controllers
         {
             return _context.Users.Any(e => e.Id == id);
         }
+
+        [Route("/api/[controller]/Clustering")]
+        [HttpGet]
+        public async Task<IActionResult> ClusterMethod(int numClusters)
+        {
+            var scriptPath = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
+
+            var engine = Python.CreateEngine();
+            var searchPaths = engine.GetSearchPaths();
+            searchPaths.Add(@"C:\users\javi\appdata\local\programs\python\python38-32\lib\site-packages");
+            engine.SetSearchPaths(searchPaths);
+            
+            var scope = engine.CreateScope();
+            engine.ExecuteFile(scriptPath, scope);
+            dynamic testFunction = scope.GetVariable("Clustering");
+            dynamic result = testFunction(numClusters);
+            // var py = Python.CreateRuntime();
+            // dynamic pyProgram = py.UseFile(scriptPath);
+
+            return await result;
+        }
+
     }
 }
