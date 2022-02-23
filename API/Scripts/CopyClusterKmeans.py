@@ -4,32 +4,30 @@ Created on Tue Nov 23 10:38:16 2021
 
 @author: Admin
 """
-
 #para calculos cientificos
 from pandas.core import indexing
 import numpy as np 
 #para el analisis de datos
 import pandas as pd 
-# para creacion de graficas
-import matplotlib.pyplot as plt 
-
 import json
+import sys
 # para importacion del metodo
 from sklearn.cluster import KMeans 
 
 from sklearn.decomposition import PCA
 
-
 def Clustering(numClusters):
-    df=pd.read_csv('./input/student-mat.csv', engine='python')
-    df.info() #vemos que es lo que contiene el objeto datos
-    df.head() #vemos las filas de los datos
+
+    df=pd.read_csv('C:\Dev\Learning_Analytics.API\API\Scripts\input\student-mat.csv', engine='python')
+    # df=pd.read_csv('./input/student-mat.csv', engine='python')
+    #df.info() #vemos que es lo que contiene el objeto datos
+    #df.head() #vemos las filas de los datos
     #linea que se usa para eliminar o no tomar en cuenta un elemento o columna
     #df_variables=df.drop(['school'], axis=1) 
     df_variables=df.drop(['G1', 'G2', 'G3', 'address', 'Pstatus', 'reason', 'famsup', 'school', 'nursery', 'goout'], axis=1)
     #Aqui podremos observar todo los estatisticos maximos, minimos, cuartiles, primedio
     #desviasion estandar, etc.
-    df_variables.describe()
+    #df_variables.describe()
 
 
     #Utilizamos el mismo metodo que se utiliza en el data set para convertir
@@ -88,7 +86,7 @@ def Clustering(numClusters):
 
     df_variables_new=df_variables.drop(columns=['sex','famsize','paid','activities','higher','internet',
                         'romantic','guardian','schoolsup','Mjob','Fjob']) 
-    df_variables_new.info()
+    #df_variables_new.info()
 
 
     #normalizamos los valores para que se pongan entre los mismo rangos
@@ -96,7 +94,7 @@ def Clustering(numClusters):
     df_norm=(df_variables_new-df_variables_new.min())/(df_variables_new.max()-df_variables_new.min())
     df_norm
 
-    df_norm.describe()
+    #df_norm.describe()
 
     #implementaremos el metdo codo de jambu
     #crea difef tipos de clustering para ver que tan simirales son los vecinos 
@@ -113,11 +111,11 @@ def Clustering(numClusters):
         arreglowcss.append(kmeans.inertia_)
         
         
-    plt.plot(range(1,11), arreglowcss)
-    plt.title('codo de Jambu')
-    plt.xlabel('Numero de clusters')
-    plt.ylabel('WCSS')#indicador de que tan similares son los individuos dentro de los clusters
-    plt.show()
+    # plt.plot(range(1,11), arreglowcss)
+    # plt.title('codo de Jambu')
+    # plt.xlabel('Numero de clusters')
+    # plt.ylabel('WCSS')#indicador de que tan similares son los individuos dentro de los clusters
+    # plt.show()
 
     #aplicamos el metodo Kmeans a la BD
 
@@ -127,7 +125,7 @@ def Clustering(numClusters):
     #agramos la clasificacion al archivo original
 
     df['KMeans_Clusters'] = clustering.labels_ #los resultados se guardan en label_ dentro del modelo
-    df.head()
+    #df.head()
 
     #visualizacion de los clustering que se fomaron
     #utilizando graficos con analisis de componentes principales PCA
@@ -141,8 +139,21 @@ def Clustering(numClusters):
     pca_nombres_df
 
     results = df.to_json(orient="records")
-    parsed = json.loads(results)
-    return json.dumps(parsed, indent=4)
+    parsed = json.loads(results) 
+    json_parsed = json.dumps(parsed, indent=4)
+
+    print(json_parsed)
+    # with open("C:\Dev\Learning_Analytics.API\API\Scripts\output", "w") as outfile:
+    #     outfile.write(json_parsed)
+    
+if len(sys.argv) == 2:
+    num_clusters = int(sys.argv[1])
+    if num_clusters > 0:
+        Clustering(num_clusters)
+else:
+    print("Favor de pasar como argumento el numero de clusters")
+
+
 
     # pca_nombres_df.to_csv('C:/Users/Admin/Documents/PrediccionDeCalificcionesSecundaria/clusters_creados/MetodoPCA1.csv')
 

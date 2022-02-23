@@ -10,6 +10,7 @@ using BC = BCrypt.Net.BCrypt;
 using Microsoft.AspNetCore.Cors;
 using IronPython;
 using IronPython.Hosting;
+using System.Diagnostics;
 
 namespace API.Controllers
 {
@@ -131,23 +132,54 @@ namespace API.Controllers
 
         [Route("/api/[controller]/Clustering")]
         [HttpGet]
-        public async Task<IActionResult> ClusterMethod(int numClusters)
+        public IActionResult ClusterMethod(int numClusters)
         {
-            var scriptPath = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
+            // var scriptPath = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
+            // var pythonPath = @"C:\Users\Javi\AppData\Local\Programs\Python\Python38-32\python.exe";
 
-            var engine = Python.CreateEngine();
-            var searchPaths = engine.GetSearchPaths();
-            searchPaths.Add(@"C:\users\javi\appdata\local\programs\python\python38-32\lib\site-packages");
-            engine.SetSearchPaths(searchPaths);
+            // Process.Start(pythonPath, $"{scriptPath} {numClusters}");
+
             
-            var scope = engine.CreateScope();
-            engine.ExecuteFile(scriptPath, scope);
-            dynamic testFunction = scope.GetVariable("Clustering");
-            dynamic result = testFunction(numClusters);
+
+            // var engine = Python.CreateEngine();
+            // var searchPaths = engine.GetSearchPaths();
+            // searchPaths.Add(@"C:\users\javi\appdata\local\programs\python\python38-32\lib\site-packages");
+            // engine.SetSearchPaths(searchPaths);
+            
+            // var scope = engine.CreateScope();
+            // engine.ExecuteFile(scriptPath, scope);
+            // dynamic testFunction = scope.GetVariable("Clustering");
+            // dynamic result = testFunction(numClusters);
             // var py = Python.CreateRuntime();
             // dynamic pyProgram = py.UseFile(scriptPath);
 
-            return await result;
+
+
+            return Ok(RunPythonScript(numClusters));
+        }
+
+        private string RunPythonScript(int numClosters)
+        {
+            string scriptPath = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
+            string jsonReceived = "";
+            // string pythonPath = @"C:\Users\Javi\AppData\Local\Programs\Python\Python38-32\python.exe";
+
+            Process p = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = $" /c py {scriptPath} {numClosters}";
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardOutput = true;        
+            // startInfo.Verb = "runas";
+            p.StartInfo = startInfo;
+            p.OutputDataReceived += (s,e) => jsonReceived += e.Data;
+            p.Start();
+            p.BeginOutputReadLine();
+            p.WaitForExit();
+
+            return jsonReceived; 
+
         }
 
     }
