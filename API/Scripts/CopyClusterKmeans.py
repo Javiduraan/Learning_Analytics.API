@@ -5,6 +5,7 @@ Created on Tue Nov 23 10:38:16 2021
 @author: Admin
 """
 #para calculos cientificos
+from ast import parse
 from pandas.core import indexing
 import numpy as np 
 #para el analisis de datos
@@ -137,15 +138,36 @@ def Clustering(numClusters):
     pca_nombres_df = pd.concat([pca_df_data, df[['KMeans_Clusters']]], axis=1) #agegamos la columna del clustering
 
     pca_nombres_df
+    #Separar data frame entre el numero de cluster
+    SplittedJson = SplitIntoArray(numClusters, pca_nombres_df)
 
-    results = df.to_json(orient="records")
+    results = pca_nombres_df.to_json(orient="records")
     parsed = json.loads(results) 
     json_parsed = json.dumps(parsed, indent=4)
 
-    print(json_parsed)
+    print(SplittedJson)
     # with open("C:\Dev\Learning_Analytics.API\API\Scripts\output", "w") as outfile:
     #     outfile.write(json_parsed)
-    
+
+
+def SplitIntoArray(numClusters, dataFrame):
+    data = {}
+    for number in range(numClusters):
+        res = dataFrame[dataFrame.KMeans_Clusters == number].to_json(orient="records")
+        arrayName = 'Array_' + str(number)
+        data[arrayName] = []
+        
+        parsed = json.loads(res)
+        json_dumped = json.dumps(parsed, indent=4)
+        data[arrayName].append(json_dumped)
+        # result = dfjson.to_json(orient="records")
+        # parsed = json.loads(result)
+        # if not parsed == "":
+            # json_dumped += json.dumps(parsed, indent=4)
+        # else:
+            # json_dumped = json.dumps(parsed, indent=4)
+    return data
+
 if len(sys.argv) == 2:
     num_clusters = int(sys.argv[1])
     if num_clusters > 0:

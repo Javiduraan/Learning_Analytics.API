@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Cors;
 using IronPython;
 using IronPython.Hosting;
 using System.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace API.Controllers
 {
@@ -133,30 +135,79 @@ namespace API.Controllers
         [Route("/api/[controller]/Clustering")]
         [HttpGet]
         public IActionResult ClusterMethod(int numClusters)
-        {
-            // var scriptPath = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
-            // var pythonPath = @"C:\Users\Javi\AppData\Local\Programs\Python\Python38-32\python.exe";
-
-            // Process.Start(pythonPath, $"{scriptPath} {numClusters}");
-
-            
-
-            // var engine = Python.CreateEngine();
-            // var searchPaths = engine.GetSearchPaths();
-            // searchPaths.Add(@"C:\users\javi\appdata\local\programs\python\python38-32\lib\site-packages");
-            // engine.SetSearchPaths(searchPaths);
-            
-            // var scope = engine.CreateScope();
-            // engine.ExecuteFile(scriptPath, scope);
-            // dynamic testFunction = scope.GetVariable("Clustering");
-            // dynamic result = testFunction(numClusters);
-            // var py = Python.CreateRuntime();
-            // dynamic pyProgram = py.UseFile(scriptPath);
-
-
-
+        {   
+            Console.WriteLine(RunPythonScript(numClusters));
             return Ok(RunPythonScript(numClusters));
         }
+
+        [Route("/api/[controller]/FirstModelSubmit")]
+        [HttpPost]
+        public IActionResult FirstModelSubmit(FirstModel fs)
+        {
+            const double x1 = 15.813793035251104;
+            const double x2 = 0.78151842;
+            const double x3 = 0.06322984;
+            const double x4 = -0.46158517;
+            double result = 0;
+
+            try
+            {
+                result = (x1 + (fs.MotherEducation * x2) + (fs.FatherEducation * x3) + (fs.StudentAge * x4));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Forbid();
+            }
+        }
+
+        [Route("/api/[controller]/SecondModelSubmit")]
+        [HttpPost]
+        public IActionResult SecondModelSubmit(SecondModel sm)
+        {
+            const double x1 = 15.813793035251104;
+            const double x2 = 0.78151842;
+            const double x3 = 0.00740238;
+            const double x4 = 0.02474765;
+            double result = 0;
+
+            try
+            {
+                result = (x1 + (sm.MotherEducation * x2) + (sm.StudentAbsences * x3) + (sm.StudentFreeTime * x4));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Forbid();
+            }
+
+        }
+
+        [Route("/api/[controller]/ThirdModelSubmit")]
+        [HttpPost]
+        public IActionResult ThirdModelSubmit(ThirdModel ts)
+        {
+            const double x1 = 15.813793035251104;
+            const double x2 = 0.21578577;
+            const double x3 = 0.00740238;
+            const double x4 = -2.20151606;
+            double result = 0;
+            
+            try
+            {
+                result = (x1 + (ts.StudentStudyTime * x2) + (ts.StudentAbsences * x3) + (ts.RejectedGrades * x4));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Forbid();
+            }
+        }
+
+
 
         private string RunPythonScript(int numClosters)
         {
@@ -170,7 +221,7 @@ namespace API.Controllers
             startInfo.FileName = "cmd.exe";
             startInfo.Arguments = $" /c py {scriptPath} {numClosters}";
             startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;        
+            startInfo.RedirectStandardOutput = true;    
             // startInfo.Verb = "runas";
             p.StartInfo = startInfo;
             p.OutputDataReceived += (s,e) => jsonReceived += e.Data;
@@ -181,6 +232,8 @@ namespace API.Controllers
             return jsonReceived; 
 
         }
+
+
 
     }
 }
