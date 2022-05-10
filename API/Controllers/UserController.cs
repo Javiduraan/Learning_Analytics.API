@@ -137,7 +137,10 @@ namespace API.Controllers
         public IActionResult ClusterMethod(int numClusters)
         {   
             Console.WriteLine(RunPythonScript(numClusters));
-            return Ok(RunPythonScript(numClusters));
+            string expRes = RunPythonScript(numClusters);
+            JsonSerializer js = new JsonSerializer();
+            string res = JsonConvert.SerializeObject(expRes);
+            return Ok(res);
         }
 
         [Route("/api/[controller]/FirstModelSubmit")]
@@ -211,15 +214,16 @@ namespace API.Controllers
 
         private string RunPythonScript(int numClosters)
         {
-            string scriptPath = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
-            string jsonReceived = "";
+            // string scriptPath = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
             // string pythonPath = @"C:\Users\Javi\AppData\Local\Programs\Python\Python38-32\python.exe";
+            const string pySCRIPT_PATH = @"C:\Users\Admin\Documents\ProyectoRegresionesReact\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
+            string jsonReceived = "";
 
             Process p = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = $" /c py {scriptPath} {numClosters}";
+            startInfo.Arguments = $" /c py {pySCRIPT_PATH} {numClosters}";
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;    
             // startInfo.Verb = "runas";
@@ -228,6 +232,7 @@ namespace API.Controllers
             p.Start();
             p.BeginOutputReadLine();
             p.WaitForExit();
+
 
             return jsonReceived; 
 

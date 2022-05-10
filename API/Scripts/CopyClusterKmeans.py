@@ -19,7 +19,7 @@ from sklearn.decomposition import PCA
 
 def Clustering(numClusters):
 
-    df=pd.read_csv('C:\Dev\Learning_Analytics.API\API\Scripts\input\student-mat.csv', engine='python')
+    df=pd.read_csv(r"C:\Users\Admin\Documents\ProyectoRegresionesReact\Learning_Analytics.API\API\Scripts\input\student-mat.csv", engine='python')
     # df=pd.read_csv('./input/student-mat.csv', engine='python')
     #df.info() #vemos que es lo que contiene el objeto datos
     #df.head() #vemos las filas de los datos
@@ -143,8 +143,9 @@ def Clustering(numClusters):
 
     results = pca_nombres_df.to_json(orient="records")
     parsed = json.loads(results) 
-    json_parsed = json.dumps(parsed, indent=4)
+    json_parsed = json.dumps(parsed, separators=(',',':'))
 
+    # print('{ "employees" : [{ "firstName":"John" , "lastName":"Doe" },{ "firstName":"Anna" , "lastName":"Smith" },{ "firstName":"Peter" , "lastName":"Jones" } ]}')
     print(SplittedJson)
     # with open("C:\Dev\Learning_Analytics.API\API\Scripts\output", "w") as outfile:
     #     outfile.write(json_parsed)
@@ -158,15 +159,20 @@ def SplitIntoArray(numClusters, dataFrame):
         data[arrayName] = []
         
         parsed = json.loads(res)
-        json_dumped = json.dumps(parsed, indent=4)
-        data[arrayName].append(json_dumped)
+        json_dumped = json.dumps(parsed, separators=(',',':'))
+        #data[arrayName].append(json_dumped[1:(len(json_dumped)-2)])##(json_dumped)
+        data[arrayName] = parsed
+        
+    json_revamped = json.dumps(data, separators=(',',':'))
+        
+        
         # result = dfjson.to_json(orient="records")
         # parsed = json.loads(result)
         # if not parsed == "":
             # json_dumped += json.dumps(parsed, indent=4)
         # else:
             # json_dumped = json.dumps(parsed, indent=4)
-    return data
+    return json_revamped
 
 if len(sys.argv) == 2:
     num_clusters = int(sys.argv[1])
