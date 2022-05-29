@@ -19,7 +19,7 @@ from sklearn.decomposition import PCA
 
 def Clustering(numClusters):
 
-    df=pd.read_csv(r"C:\Users\Admin\Documents\ProyectoRegresionesReact\Learning_Analytics.API\API\Scripts\input\student-mat.csv", engine='python')
+    df=pd.read_csv(r"C:\Dev\Learning_Analytics.API\API\Scripts\input\student-mat.csv", engine='python')
     # df=pd.read_csv('./input/student-mat.csv', engine='python')
     #df.info() #vemos que es lo que contiene el objeto datos
     #df.head() #vemos las filas de los datos

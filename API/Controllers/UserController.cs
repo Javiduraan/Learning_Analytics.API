@@ -216,7 +216,8 @@ namespace API.Controllers
         {
             // string scriptPath = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
             // string pythonPath = @"C:\Users\Javi\AppData\Local\Programs\Python\Python38-32\python.exe";
-            const string pySCRIPT_PATH = @"C:\Users\Admin\Documents\ProyectoRegresionesReact\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
+            // const string pySCRIPT_PATH = @"C:\Users\Admin\Documents\ProyectoRegresionesReact\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
+            const string pySCRIPT_PATH = @"C:\Dev\Learning_Analytics.API\API\Scripts\CopyClusterKmeans.py";
             string jsonReceived = "";
 
             Process p = new Process();
